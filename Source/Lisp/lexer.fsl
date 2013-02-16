@@ -1,0 +1,12 @@
+﻿{
+module Lexer
+open System
+open Parser
+open Microsoft.FSharp.Text.Lexing
+}
+
+let whitespace = [' ' '\n' '\r']
+
+rule tokenize line = parse
+| whitespace	{ tokenize line lexbuf }
+| eof			{ END }

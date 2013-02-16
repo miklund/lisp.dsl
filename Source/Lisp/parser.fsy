@@ -1,0 +1,17 @@
+﻿%{
+open System
+open Microsoft.FSharp.Collections
+open Lisp.Statements
+%}
+
+%token END
+
+%start start
+%type <Lisp.Statements.Ast> start
+
+%%
+
+start:
+	END { Unparsed }
+
+%%

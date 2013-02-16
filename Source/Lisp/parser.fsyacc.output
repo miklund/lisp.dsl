@@ -1,0 +1,199 @@
+Output file describing compiled parser placed in .\Source\Main\Lisp.Dsl\parser.fs and .\Source\Main\Lisp.Dsl\parser.fsi
+------------------------
+states = 
+state 0:
+  items:
+    _startstart ->  . start
+
+  actions:
+    action 'LPAREN' (noprec):   shift 5
+    action 'RPAREN' (noprec):   error
+    action 'END' (noprec):   error
+    action 'NUMBER' (noprec):   shift 4
+    action 'IDENTIFIER' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto start: 1
+    goto expression: 2
+
+state 1:
+  items:
+    _startstart -> start . 
+
+  actions:
+    action 'LPAREN' (noprec):   accept
+    action 'RPAREN' (noprec):   accept
+    action 'END' (noprec):   accept
+    action 'NUMBER' (noprec):   accept
+    action 'IDENTIFIER' (noprec):   accept
+    action 'error' (noprec):   accept
+    action '#' (noprec):   accept
+    action '$$' (noprec):   accept
+
+  immediate action:   accept
+ gotos:
+
+state 2:
+  items:
+    start -> expression . 'END'
+
+  actions:
+    action 'LPAREN' (noprec):   error
+    action 'RPAREN' (noprec):   error
+    action 'END' (noprec):   shift 3
+    action 'NUMBER' (noprec):   error
+    action 'IDENTIFIER' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 3:
+  items:
+    start -> expression 'END' . 
+
+  actions:
+    action 'LPAREN' (noprec):   reduce start --> expression 'END'
+    action 'RPAREN' (noprec):   reduce start --> expression 'END'
+    action 'END' (noprec):   reduce start --> expression 'END'
+    action 'NUMBER' (noprec):   reduce start --> expression 'END'
+    action 'IDENTIFIER' (noprec):   reduce start --> expression 'END'
+    action 'error' (noprec):   reduce start --> expression 'END'
+    action '#' (noprec):   reduce start --> expression 'END'
+    action '$$' (noprec):   reduce start --> expression 'END'
+
+  immediate action:   reduce start --> expression 'END'
+ gotos:
+
+state 4:
+  items:
+    expression -> 'NUMBER' . 
+
+  actions:
+    action 'LPAREN' (noprec):   reduce expression --> 'NUMBER'
+    action 'RPAREN' (noprec):   reduce expression --> 'NUMBER'
+    action 'END' (noprec):   reduce expression --> 'NUMBER'
+    action 'NUMBER' (noprec):   reduce expression --> 'NUMBER'
+    action 'IDENTIFIER' (noprec):   reduce expression --> 'NUMBER'
+    action 'error' (noprec):   reduce expression --> 'NUMBER'
+    action '#' (noprec):   reduce expression --> 'NUMBER'
+    action '$$' (noprec):   reduce expression --> 'NUMBER'
+
+  immediate action:   reduce expression --> 'NUMBER'
+ gotos:
+
+state 5:
+  items:
+    expression -> 'LPAREN' . 'IDENTIFIER' parameters
+
+  actions:
+    action 'LPAREN' (noprec):   error
+    action 'RPAREN' (noprec):   error
+    action 'END' (noprec):   error
+    action 'NUMBER' (noprec):   error
+    action 'IDENTIFIER' (noprec):   shift 6
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 6:
+  items:
+    expression -> 'LPAREN' 'IDENTIFIER' . parameters
+
+  actions:
+    action 'LPAREN' (noprec):   shift 5
+    action 'RPAREN' (noprec):   shift 8
+    action 'END' (noprec):   error
+    action 'NUMBER' (noprec):   shift 4
+    action 'IDENTIFIER' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto expression: 9
+    goto parameters: 7
+
+state 7:
+  items:
+    expression -> 'LPAREN' 'IDENTIFIER' parameters . 
+
+  actions:
+    action 'LPAREN' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+    action 'RPAREN' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+    action 'END' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+    action 'NUMBER' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+    action 'IDENTIFIER' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+    action 'error' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+    action '#' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+    action '$$' (noprec):   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+
+  immediate action:   reduce expression --> 'LPAREN' 'IDENTIFIER' parameters
+ gotos:
+
+state 8:
+  items:
+    parameters -> 'RPAREN' . 
+
+  actions:
+    action 'LPAREN' (noprec):   reduce parameters --> 'RPAREN'
+    action 'RPAREN' (noprec):   reduce parameters --> 'RPAREN'
+    action 'END' (noprec):   reduce parameters --> 'RPAREN'
+    action 'NUMBER' (noprec):   reduce parameters --> 'RPAREN'
+    action 'IDENTIFIER' (noprec):   reduce parameters --> 'RPAREN'
+    action 'error' (noprec):   reduce parameters --> 'RPAREN'
+    action '#' (noprec):   reduce parameters --> 'RPAREN'
+    action '$$' (noprec):   reduce parameters --> 'RPAREN'
+
+  immediate action:   reduce parameters --> 'RPAREN'
+ gotos:
+
+state 9:
+  items:
+    parameters -> expression . parameters
+
+  actions:
+    action 'LPAREN' (noprec):   shift 5
+    action 'RPAREN' (noprec):   shift 8
+    action 'END' (noprec):   error
+    action 'NUMBER' (noprec):   shift 4
+    action 'IDENTIFIER' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto expression: 9
+    goto parameters: 10
+
+state 10:
+  items:
+    parameters -> expression parameters . 
+
+  actions:
+    action 'LPAREN' (noprec):   reduce parameters --> expression parameters
+    action 'RPAREN' (noprec):   reduce parameters --> expression parameters
+    action 'END' (noprec):   reduce parameters --> expression parameters
+    action 'NUMBER' (noprec):   reduce parameters --> expression parameters
+    action 'IDENTIFIER' (noprec):   reduce parameters --> expression parameters
+    action 'error' (noprec):   reduce parameters --> expression parameters
+    action '#' (noprec):   reduce parameters --> expression parameters
+    action '$$' (noprec):   reduce parameters --> expression parameters
+
+  immediate action:   reduce parameters --> expression parameters
+ gotos:
+
+
+startStates = 0
+------------------------
