@@ -45,9 +45,10 @@
     <Compile Include="parser.fsi" />
     <Compile Include="parser.fs" />
     <Compile Include="lexer.fs" />
+    <Compile Include="invoker.fs" />
     <Compile Include="Tests\lexer.fs" />
     <Compile Include="Tests\parser.fs" />
-    <Compile Include="Tests\intepreter.fs" />
+    <Compile Include="Tests\invoker.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
