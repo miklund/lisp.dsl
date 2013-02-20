@@ -1,4 +1,6 @@
 ﻿namespace Lisp
 module Statements =    
-    type Ast = | Unparsed
+    type Ast = 
+    | Number of int
+    | Boolean of bool
     

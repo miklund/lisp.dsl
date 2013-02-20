@@ -13,27 +13,36 @@ open Lisp.Statements
 // This type is the type of tokens accepted by the parser
 type token = 
   | END
+  | BOOLEAN of (bool)
+  | NUMBER of (int)
 // This type is used to give symbolic names to token indexes, useful for error messages
 type tokenId = 
     | TOKEN_END
+    | TOKEN_BOOLEAN
+    | TOKEN_NUMBER
     | TOKEN_end_of_input
     | TOKEN_error
 // This type is used to give symbolic names to token indexes, useful for error messages
 type nonTerminalId = 
     | NONTERM__startstart
     | NONTERM_start
+    | NONTERM_primitive
 
 // This function maps tokens to integers indexes
 let tagOfToken (t:token) = 
   match t with
   | END  -> 0 
+  | BOOLEAN _ -> 1 
+  | NUMBER _ -> 2 
 
 // This function maps integers indexes to symbolic token ids
 let tokenTagToTokenId (tokenIdx:int) = 
   match tokenIdx with
   | 0 -> TOKEN_END 
-  | 3 -> TOKEN_end_of_input
-  | 1 -> TOKEN_error
+  | 1 -> TOKEN_BOOLEAN 
+  | 2 -> TOKEN_NUMBER 
+  | 5 -> TOKEN_end_of_input
+  | 3 -> TOKEN_error
   | _ -> failwith "tokenTagToTokenId: bad token"
 
 /// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production
@@ -41,32 +50,38 @@ let prodIdxToNonTerminal (prodIdx:int) =
   match prodIdx with
     | 0 -> NONTERM__startstart 
     | 1 -> NONTERM_start 
+    | 2 -> NONTERM_primitive 
+    | 3 -> NONTERM_primitive 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
-let _fsyacc_endOfInputTag = 3 
-let _fsyacc_tagOfErrorTerminal = 1
+let _fsyacc_endOfInputTag = 5 
+let _fsyacc_tagOfErrorTerminal = 3
 
 // This function gets the name of a token as a string
 let token_to_string (t:token) = 
   match t with 
   | END  -> "END" 
+  | BOOLEAN _ -> "BOOLEAN" 
+  | NUMBER _ -> "NUMBER" 
 
 // This function gets the data carried by a token as an object
 let _fsyacc_dataOfToken (t:token) = 
   match t with 
   | END  -> (null : System.Object) 
-let _fsyacc_gotos = [| 0us; 65535us; 1us; 65535us; 0us; 1us; |]
-let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; |]
-let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 1us; 1us; |]
-let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; |]
-let _fsyacc_action_rows = 3
-let _fsyacc_actionTableElements = [|1us; 32768us; 0us; 2us; 0us; 49152us; 0us; 16385us; |]
-let _fsyacc_actionTableRowOffsets = [|0us; 2us; 3us; |]
-let _fsyacc_reductionSymbolCounts = [|1us; 1us; |]
-let _fsyacc_productionToNonTerminalTable = [|0us; 1us; |]
-let _fsyacc_immediateActions = [|65535us; 49152us; 16385us; |]
+  | BOOLEAN _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | NUMBER _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+let _fsyacc_gotos = [| 0us; 65535us; 1us; 65535us; 0us; 1us; 1us; 65535us; 0us; 2us; |]
+let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 3us; |]
+let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 1us; 1us; 1us; 1us; 1us; 2us; 1us; 3us; |]
+let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 6us; 8us; 10us; |]
+let _fsyacc_action_rows = 6
+let _fsyacc_actionTableElements = [|2us; 32768us; 1us; 5us; 2us; 4us; 0us; 49152us; 1us; 32768us; 0us; 3us; 0us; 16385us; 0us; 16386us; 0us; 16387us; |]
+let _fsyacc_actionTableRowOffsets = [|0us; 3us; 4us; 6us; 7us; 8us; |]
+let _fsyacc_reductionSymbolCounts = [|1us; 2us; 1us; 1us; |]
+let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 2us; |]
+let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 16385us; 16386us; 16387us; |]
 let _fsyacc_reductions ()  =    [| 
-# 69 ".\Source\Lisp\parser.fs"
+# 84 ".\Source\Lisp\parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Lisp.Statements.Ast)) in
             Microsoft.FSharp.Core.Operators.box
@@ -75,18 +90,41 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startstart));
-# 78 ".\Source\Lisp\parser.fs"
+# 93 ".\Source\Lisp\parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'primitive)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 15 ".\Source\Lisp\parser.fsy"
-                            Unparsed 
+# 17 ".\Source\Lisp\parser.fsy"
+                                      _1 
                    )
-# 15 ".\Source\Lisp\parser.fsy"
+# 17 ".\Source\Lisp\parser.fsy"
                  : Lisp.Statements.Ast));
+# 104 ".\Source\Lisp\parser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : int)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 20 ".\Source\Lisp\parser.fsy"
+                                 Number(_1) 
+                   )
+# 20 ".\Source\Lisp\parser.fsy"
+                 : 'primitive));
+# 115 ".\Source\Lisp\parser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : bool)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 21 ".\Source\Lisp\parser.fsy"
+                                  Boolean(_1) 
+                   )
+# 21 ".\Source\Lisp\parser.fsy"
+                 : 'primitive));
 |]
-# 89 ".\Source\Lisp\parser.fs"
+# 127 ".\Source\Lisp\parser.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
@@ -105,7 +143,7 @@ let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> =
                               match parse_error_rich with 
                               | Some f -> f ctxt
                               | None -> parse_error ctxt.Message);
-    numTerminals = 4;
+    numTerminals = 6;
     productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }
 let engine lexer lexbuf startState = (tables ()).Interpret(lexer, lexbuf, startState)
 let start lexer lexbuf : Lisp.Statements.Ast =

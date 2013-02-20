@@ -4,6 +4,8 @@ open Microsoft.FSharp.Collections
 open Lisp.Statements
 %}
 
+%token <int> NUMBER
+%token <bool> BOOLEAN
 %token END
 
 %start start
@@ -12,6 +14,10 @@ open Lisp.Statements
 %%
 
 start:
-	END { Unparsed }
+	primitive END { $1 }
+
+primitive:
+	| NUMBER { Number($1) }
+	| BOOLEAN { Boolean($1) } 
 
 %%

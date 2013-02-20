@@ -2,13 +2,18 @@
 module Parser
 type token = 
   | END
+  | BOOLEAN of (bool)
+  | NUMBER of (int)
 type tokenId = 
     | TOKEN_END
+    | TOKEN_BOOLEAN
+    | TOKEN_NUMBER
     | TOKEN_end_of_input
     | TOKEN_error
 type nonTerminalId = 
     | NONTERM__startstart
     | NONTERM_start
+    | NONTERM_primitive
 /// This function maps integers indexes to symbolic token ids
 val tagOfToken: token -> int
 
