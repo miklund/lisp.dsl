@@ -6,6 +6,8 @@ open Lisp.Statements
 
 %token <int> NUMBER
 %token <bool> BOOLEAN
+%token <string> IDENTIFIER
+%token LPAREN RPAREN
 %token END
 
 %start start
@@ -14,10 +16,14 @@ open Lisp.Statements
 %%
 
 start:
-	primitive END { $1 }
+	expression END { $1 }
 
-primitive:
+expression:
 	| NUMBER { Number($1) }
 	| BOOLEAN { Boolean($1) } 
+	| LPAREN IDENTIFIER parameters { Call($2, $3) }
 
+parameters:
+	| RPAREN { [] }
+	| expression parameters { $1 :: $2 }
 %%

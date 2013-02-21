@@ -9,9 +9,13 @@ let whitespace = [' ' '\n' '\r']
 let digit = ['0'-'9']
 let number = '-'?digit+
 let boolean = "t" | "nil"
+let char = ['a'-'z' 'A'-'Z']
 
 rule tokenize line = parse
 | whitespace	{ tokenize line lexbuf }
 | number		{ NUMBER (Int32.Parse(LexBuffer<_>.LexemeString lexbuf)) }
 | boolean		{ if (LexBuffer<_>.LexemeString lexbuf) = "t" then BOOLEAN(true) else BOOLEAN(false) }
+| char+         { IDENTIFIER(LexBuffer<_>.LexemeString lexbuf) }
+| "("			{ LPAREN }
+| ")"			{ RPAREN }
 | eof			{ END }

@@ -25,3 +25,12 @@ let ``t is parsed as boolean(true)`` () =
 [<Fact>]
 let ``nil is parsed as boolean(false)`` () =
     "nil" |> parse |> should equal (Boolean false)
+
+// call
+[<Fact>]
+let ``(add 1 2) is parsed as call with parameters`` () =
+    "(add 1 2)" |> parse |> should equal (Call ("add", [Number 1; Number 2]))
+
+[<Fact>]
+let ``(add (add 1 2) 3) is parsed as nested function alls`` () =
+    "(add (add 1 2) 3)" |> parse |> should equal (Call ("add", [Call ("add", [Number 1; Number 2]); Number 3]))

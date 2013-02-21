@@ -43,3 +43,12 @@ let ``t is lexed as a boolean`` () =
 [<Fact>]
 let ``nil is lexed as boolean`` () =
     "nil" |> lex |> toString |> should equal "BOOLEAN END"
+
+// calls
+[<Fact>]
+let ``(add 1 2) is parsed as a function call`` () =
+    "(add 1 2)" |> lex |> toString |> should equal "LPAREN IDENTIFIER NUMBER NUMBER RPAREN END"
+
+[<Fact>]
+let ``(add (add 1 2) 3) is parsed as nested call`` () =
+    "(add (add 1 2) 3)" |> lex |> toString |> should equal "LPAREN IDENTIFIER LPAREN IDENTIFIER NUMBER NUMBER RPAREN NUMBER RPAREN END"
