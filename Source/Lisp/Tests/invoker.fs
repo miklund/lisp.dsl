@@ -21,3 +21,8 @@ let ``should invoke "t" as true`` () =
 [<Fact>]
 let ``should invoke "nil" as false`` () =
     "nil" |> invoke<bool> |> should equal false
+
+// function call
+[<Fact>]
+let ``should invoke (add 1 2) as 3`` () =
+    "(add 1 2)" |> invoke<int> |> should equal 3
