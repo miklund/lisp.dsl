@@ -25,4 +25,12 @@ let ``should invoke "nil" as false`` () =
 // function call
 [<Fact>]
 let ``should invoke (add 1 2) as 3`` () =
-    "(add 1 2)" |> invoke<int> |> should equal 3
+    "(add 1 2)" |> invoke<int> |> should equal 3 // ironicly this is also valid fsharp code
+
+[<Fact>]
+let ``should invoke (sub 4 3) as 1`` () =
+    "(sub 4 3)" |> invoke<int> |> should equal 1
+
+[<Fact>]
+let ``should invoke (add (add 1 2) (add 3 (add 4 5))) as 15`` () =
+    "(add (add 1 2) (add 3 (add 4 5)))" |> invoke<int> |> should equal 15
