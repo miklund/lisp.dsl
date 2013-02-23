@@ -4,6 +4,7 @@ type token =
   | END
   | LPAREN
   | RPAREN
+  | DEFUN
   | IDENTIFIER of (string)
   | BOOLEAN of (bool)
   | NUMBER of (int)
@@ -11,6 +12,7 @@ type tokenId =
     | TOKEN_END
     | TOKEN_LPAREN
     | TOKEN_RPAREN
+    | TOKEN_DEFUN
     | TOKEN_IDENTIFIER
     | TOKEN_BOOLEAN
     | TOKEN_NUMBER
@@ -21,6 +23,7 @@ type nonTerminalId =
     | NONTERM_start
     | NONTERM_expression
     | NONTERM_parameters
+    | NONTERM_arguments
 /// This function maps integers indexes to symbolic token ids
 val tagOfToken: token -> int
 

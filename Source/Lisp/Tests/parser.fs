@@ -34,3 +34,16 @@ let ``(add 1 2) is parsed as call with parameters`` () =
 [<Fact>]
 let ``(add (add 1 2) 3) is parsed as nested function alls`` () =
     "(add (add 1 2) 3)" |> parse |> should equal (Call ("add", [Call ("add", [Number 1; Number 2]); Number 3]))
+
+// defun
+[<Fact>]
+let ``(defun one () 1) is parsed as a function definition`` () =
+    "(defun one () 1)" |> parse |> should equal (Defun ("one", [], Number 1))
+
+[<Fact>]
+let ``(defun addTwo (x) (add x 2)) is parsed as a function definition`` () =
+    "(defun addTwo (x) (add x 2))" |> parse |> should equal (Defun ("addTwo", [("x", typeof<int>)], (Call ("add", [Identifier "x"; Number 2]))))
+
+[<Fact>]
+let ``(defun myAdd (x y) (add x y)) is parsed as a function definition`` () =
+    "(defun myAdd (x y) (add x y))" |> parse |> should equal (Defun ("myAdd", [("x", typeof<int>); ("y", typeof<int>)], (Call ("add", [Identifier "x"; Identifier "y"]))))

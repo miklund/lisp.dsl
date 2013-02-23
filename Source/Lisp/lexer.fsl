@@ -13,6 +13,7 @@ let char = ['a'-'z' 'A'-'Z']
 
 rule tokenize line = parse
 | whitespace	{ tokenize line lexbuf }
+| "defun"		{ DEFUN }
 | number		{ NUMBER (Int32.Parse(LexBuffer<_>.LexemeString lexbuf)) }
 | boolean		{ if (LexBuffer<_>.LexemeString lexbuf) = "t" then BOOLEAN(true) else BOOLEAN(false) }
 | char+         { IDENTIFIER(LexBuffer<_>.LexemeString lexbuf) }

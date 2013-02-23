@@ -52,3 +52,12 @@ let ``(add 1 2) is parsed as a function call`` () =
 [<Fact>]
 let ``(add (add 1 2) 3) is parsed as nested call`` () =
     "(add (add 1 2) 3)" |> lex |> toString |> should equal "LPAREN IDENTIFIER LPAREN IDENTIFIER NUMBER NUMBER RPAREN NUMBER RPAREN END"
+
+// defun
+[<Fact>]
+let ``(defun addTwo (x) (add x 2)) is parsed as function definition`` () =
+    "(defun addTwo (x) (add x 2))" |> lex |> toString |> should equal "LPAREN DEFUN IDENTIFIER LPAREN IDENTIFIER RPAREN LPAREN IDENTIFIER IDENTIFIER NUMBER RPAREN RPAREN END"
+
+[<Fact>]
+let ``(defun myAdd (x y) (add x y)) is parsed as function definition`` () =
+    "(defun myAdd (x y) (add x y))" |> lex |> toString |> should equal "LPAREN DEFUN IDENTIFIER LPAREN IDENTIFIER IDENTIFIER RPAREN LPAREN IDENTIFIER IDENTIFIER IDENTIFIER RPAREN RPAREN END"
