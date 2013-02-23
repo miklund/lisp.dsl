@@ -45,11 +45,11 @@ let rec mergeLetExpressions<'a> (exprs : (Quotations.Expr -> Quotations.Expr) li
     | hd :: tl -> hd(mergeLetExpressions tl body) |> Quotations.Expr<'a>.Cast
 
 // execute ast
-let invoke<'a> (framework : (string * System.Type * Quotations.Expr) list) ast = 
+let invoke<'a> (framework : (string * System.Type * Quotations.Expr) list) (ast : Ast list) = 
     let vars, exprs = framework |> List.map create_fn |> List.unzip
     // create vars map
     let state = vars |> List.map (fun var -> var.Name, Quotations.Expr.Var(var)) |> Map.ofList
     // build expression tree from framework
     let header = (mergeLetExpressions<'a> exprs)
     // join framework expression tree with intepretated ast
-    (header (toExpr<'a> state ast)).Eval()
+    (header (toExpr<'a> state (ast.Head))).Eval()

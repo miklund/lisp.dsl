@@ -5,7 +5,8 @@ open Parser
 open Microsoft.FSharp.Text.Lexing
 }
 
-let whitespace = [' ' '\n' '\r']
+let whitespace = [' ' '\t']
+let newline = ('\n' | '\r' '\n')
 let digit = ['0'-'9']
 let number = '-'?digit+
 let boolean = "t" | "nil"
@@ -13,6 +14,7 @@ let char = ['a'-'z' 'A'-'Z']
 
 rule tokenize line = parse
 | whitespace	{ tokenize line lexbuf }
+| newline       { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize (line + 1) lexbuf; }
 | "defun"		{ DEFUN }
 | number		{ NUMBER (Int32.Parse(LexBuffer<_>.LexemeString lexbuf)) }
 | boolean		{ if (LexBuffer<_>.LexemeString lexbuf) = "t" then BOOLEAN(true) else BOOLEAN(false) }

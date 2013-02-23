@@ -42,3 +42,4 @@ let ``should invoke (eq 1 2)`` () =
 [<Fact>]
 let ``should invoke (if (eq 1 2) (add 1 2) (sub 1 2)) as -1`` () =
     "(if (eq 1 2) (add 1 2) (sub 1 2))" |> invoke<int> |> should equal -1
+
