@@ -34,3 +34,11 @@ let ``should invoke (sub 4 3) as 1`` () =
 [<Fact>]
 let ``should invoke (add (add 1 2) (add 3 (add 4 5))) as 15`` () =
     "(add (add 1 2) (add 3 (add 4 5)))" |> invoke<int> |> should equal 15
+
+[<Fact>]
+let ``should invoke (eq 1 2)`` () =
+    "(eq 1 2)" |> invoke<bool> |> should equal false
+
+[<Fact>]
+let ``should invoke (if (eq 1 2) (add 1 2) (sub 1 2)) as -1`` () =
+    "(if (eq 1 2) (add 1 2) (sub 1 2))" |> invoke<int> |> should equal -1
