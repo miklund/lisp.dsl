@@ -5,6 +5,7 @@ open Microsoft.FSharp.Quotations
 open Linq.QuotationEvaluation
 open Microsoft.FSharp.Reflection
 
+// functions that are callable from inside my lisp program
 let framework = 
     [
         "add", typeof<int -> int -> int>, <@@ (fun a b -> a + b) @@>;
@@ -13,68 +14,37 @@ let framework =
         "if", typeof<bool -> int -> int -> int>, <@@ (fun cond (yes : int) no -> if cond then yes else no) @@>
     ]
 
-// success
-//let var = Quotations.Var("add", typeof<int -> int>)
-//let expr = Quotations.Expr.Var(var)
-//Quotations.Expr.Let(var, <@@ (fun a -> a + 2) @@>, (Quotations.Expr.Application(expr, <@@ 3 @@>))).Eval()
-// success
+// Create an application
+// Example: Application (Application (add, Value (1)), Value (2))
+let application var args =
+    args |> List.fold(fun prev next -> Quotations.Expr.Application(prev, next)) var
 
-let rec expand (functionType : System.Type) =
-    if FSharpType.IsFunction(functionType) then
-        let first, rest = FSharpType.GetFunctionElements(functionType)
-        first :: expand(rest)
-    else
-        []
-
-let rec application var = function
-| [expr]   -> Quotations.Expr.Application(var, expr)
-| hd :: tl -> Quotations.Expr.Application((application var tl), hd)
-| []       -> failwith "Functions with no arguments aren't pure functions"
-
-
-//let rec toExpr vars = function
-//| Number(x)  -> Quotations.Expr.Value(x)
-//| Boolean(x) -> Quotations.Expr.Value(x)
-//| Call(name, arguments) ->
-//    // resolve arguments
-//    let argumentExpressions = arguments |> List.map (fun arg -> <@@ %%(toExpr vars arg) @@>)
-//    // create application
-//    application (vars |> Map.find(name)) (argumentExpressions |> List.rev)
-
-
-//<@@ let addTwo a = a + 2 in addTwo 3 @@>
 // convert ast to Quotations.Expr
-type Expressionist =
-    static member toExprUntyped t =
-        (fun (vars : Map<string, Quotations.Expr>) (ast : Ast) -> 
-            let definition = (typeof<Expressionist>.GetMethod "toExpr").MakeGenericMethod [| t |]
-            definition.Invoke(null, [|vars; ast|]) :?> Quotations.Expr
-        )
+let rec toExprUntyped vars = function
+| Number(x)  -> Quotations.Expr.Value(x)
+| Boolean(x) -> Quotations.Expr.Value(x)
+| Call(name, arguments) ->
+    // resolve arguments
+    let argumentExpressions = arguments |> List.map (fun arg -> (toExprUntyped vars arg))
+    // create application
+    application (vars |> Map.find(name)) argumentExpressions
 
-    static member toExpr<'a> (vars : Map<string, Quotations.Expr>) ast : Quotations.Expr<'a> =
-        printfn "%A\n" ast
-        match ast with
-        | Number(x)  -> <@ x @> |> Quotations.Expr<'a>.Cast
-        | Boolean(x) -> <@ x @> |> Quotations.Expr<'a>.Cast
-        | Call(name, arguments) ->
-            // function reference
-            let func = vars |> Map.find(name)
-            // resolve arguments
-            let argumentExpressions = arguments |> List.zip (expand (func.Type)) |> List.map (fun (t, arg) -> <@@ %%((Expressionist.toExprUntyped t) vars arg) @@>)
-            // create application
-            application func (argumentExpressions |> List.rev) |> Quotations.Expr<'a>.Cast
+// typed version of toExprUntyped
+let toExpr<'a> (vars : Map<string, Quotations.Expr>) ast : Quotations.Expr<'a> =
+    (toExprUntyped vars ast) |> Quotations.Expr<'a>.Cast
 
+// take name, function signature and body, create a var and let expression in a tuple
 let create_fn (name, signature, lambda) =
     let var = Quotations.Var(name, signature)
-    var , (fun (body : Quotations.Expr) -> Quotations.Expr.Let(var, lambda, body))
+    var, (fun (body : Quotations.Expr) -> Quotations.Expr.Let(var, lambda, body))
 
+// make next let expression become body of the previous
 let rec mergeLetExpressions<'a> (exprs : (Quotations.Expr -> Quotations.Expr) list) (body : Quotations.Expr<'a>) = 
     match exprs with
     | [] -> body
     | hd :: tl -> hd(mergeLetExpressions tl body) |> Quotations.Expr<'a>.Cast
 
 // execute ast
-// let ast = Number 1
 let invoke<'a> (framework : (string * System.Type * Quotations.Expr) list) ast = 
     let vars, exprs = framework |> List.map create_fn |> List.unzip
     // create vars map
@@ -82,4 +52,4 @@ let invoke<'a> (framework : (string * System.Type * Quotations.Expr) list) ast =
     // build expression tree from framework
     let header = (mergeLetExpressions<'a> exprs)
     // join framework expression tree with intepretated ast
-    (header (Expressionist.toExpr<'a> state ast)).Eval()
+    (header (toExpr<'a> state ast)).Eval()
