@@ -22,13 +22,12 @@ let application var args =
 
 // convert ast to Quotations.Expr
 let rec toExprUntyped vars = function
-| [] -> failwith "Nothing to invoke"
-| Number(x) :: tl -> Quotations.Expr.Value(x)
-| Boolean(x) :: tl -> Quotations.Expr.Value(x)
-| Identifier(x) :: tl -> vars |> Map.find(x)
-| Call(name, arguments) :: tl ->
+| Number(x) -> Quotations.Expr.Value(x)
+| Boolean(x) -> Quotations.Expr.Value(x)
+| Identifier(x) -> vars |> Map.find(x)
+| Call(name, arguments) ->
     // resolve arguments
-    let argumentExpressions = arguments |> List.map (fun arg -> (toExprUntyped vars [arg]))
+    let argumentExpressions = arguments |> List.map (fun arg -> (toExprUntyped vars arg))
     // create application
     argumentExpressions |> List.fold(fun prev next -> Quotations.Expr.Application(prev, next)) (vars |> Map.find(name))
 
@@ -36,7 +35,7 @@ let rec toExprUntyped vars = function
 // let name = "myAdd"
 // let parameters = [("x", typeof<int>); ("y", typeof<int>)]
 // let bodyAst = Call ("add", [(Identifier "x"); (Identifier "y")])
-| Defun(name, parameters, bodyAst) :: tl ->
+| Defun(name, parameters, bodyAst, inscopeAst) ->
     // create function local variables
     let localVars = parameters |> List.map (fun (paramName, paramType) -> Quotations.Var(paramName, paramType))
     // create function local variables expressions
@@ -44,7 +43,7 @@ let rec toExprUntyped vars = function
     // create local scope
     let localScope = List.zip parameters localVarsExpr |> List.fold (fun scope ((paramName, _), varExpr) -> scope |> Map.add paramName varExpr) vars
     // evaluate body
-    let bodyExpr = toExprUntyped localScope [bodyAst]
+    let bodyExpr = toExprUntyped localScope bodyAst
     // create body lambda
     let lambdaExpr = localVars |> List.rev |> List.fold (fun expr var -> Quotations.Expr.Lambda(var, expr)) bodyExpr
     // create function handle
@@ -52,9 +51,9 @@ let rec toExprUntyped vars = function
     // create let expression
     let letExpr next = Quotations.Expr.Let(funcVar, lambdaExpr, next)
     // return evaluation of next, with this function in scope
-    letExpr (toExprUntyped (vars.Add(name, Quotations.Expr.Var(funcVar))) tl)
+    letExpr (toExprUntyped (vars.Add(name, Quotations.Expr.Var(funcVar))) inscopeAst)
 
-| hd :: tl -> failwith (sprintf "Unknown program construct %A" hd)
+| x -> failwith (sprintf "Unknown program construct %A" x)
 
 // typed version of toExprUntyped
 let toExpr<'a> (vars : Map<string, Quotations.Expr>) ast : Quotations.Expr<'a> =
@@ -72,11 +71,11 @@ let rec mergeLetExpressions<'a> (exprs : (Quotations.Expr -> Quotations.Expr) li
     | hd :: tl -> hd(mergeLetExpressions tl body) |> Quotations.Expr<'a>.Cast
 
 // execute ast
-let invoke<'a> (framework : (string * System.Type * Quotations.Expr) list) (ast : Ast list) = 
+let invoke<'a> (framework : (string * System.Type * Quotations.Expr) list) (ast : Ast) = 
     let state, exprs = framework |> List.map create_fn |> List.unzip
     // create vars map
     let vars = state |> List.map (fun var -> var.Name, Quotations.Expr.Var(var)) |> Map.ofList
     // build expression tree from framework
     let header = (mergeLetExpressions<'a> exprs)
     // join framework expression tree with intepretated ast
-    (header (toExpr<'a> vars (ast))).Eval()
+    (header (toExpr<'a> vars ast)).Eval()

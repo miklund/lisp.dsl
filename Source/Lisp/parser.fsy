@@ -13,13 +13,12 @@ open Lisp.Statements
 %token END
 
 %start start
-%type <Lisp.Statements.Ast list> start
+%type <Lisp.Statements.Ast> start
 
 %%
 
 start:
-	| END { [] }
-	| expression start { $1 :: $2 }
+	expression END { $1 }
 
 expression:
 	| NUMBER { Number($1) }

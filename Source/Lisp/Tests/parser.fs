@@ -43,24 +43,21 @@ let ``(defun one () 1) is parsed as a function definition`` () =
 [<Fact>]
 let ``(defun addTwo (x) (add x 2)) is parsed as a function definition`` () =
     "(defun addTwo (x) (add x 2))" |> parse |> should equal (Defun ("addTwo", [Identifier "x"], (Call ("add", [Identifier "x"; Number 2]))))
+    |> should equal (Defun ("addTwo", [("x", typeof<int>)], (Call ("add", [Identifier "x"; Number 2])), Call ("addTwo", [Number 3])))
 
 [<Fact>]
-let ``(defun myAdd (x y) (add x y)) is parsed as a function definition`` () =
+let ``(defun myAdd (x y) (add x y)) (myAdd 3 4) is parsed as a function definition`` () =
     "(defun myAdd (x y) (add x y))" |> parse |> should equal (Defun ("myAdd", [Identifier "x"; Identifier "y"], (Call ("add", [Identifier "x"; Identifier "y"]))))
-
-[<Fact>]
-let ``should be able to place two function calls after each other`` () =
-    @"(add 1 2)
-      (add 3 4)" |> parse |> should equal [Call ("add", [Number 1; Number 2]); Call ("add", [Number 3; Number 4])]
-
-[<Fact>]
+    |> should equal (Defun ("myAdd", [("x", typeof<int>); ("y", typeof<int>)], (Call ("add", [Identifier "x"; Identifier "y"])), Call ("myAdd", [Number 3; Number 4])))
 let ``should place function definitions after each other`` () =
-    @"(defun one () 1) (one)" |> parse |> should equal [Defun ("one", [], Number 1); Call ("one", [])]
+    @"(defun one () 1) (one)" |> parse |> should equal (Defun ("one", [], Number 1, Call ("one", [])))
 
 [<Fact>]
 let ``should place function definitions in each own rows`` () =
     @"(defun addFive (x) (add x 5))
-      (defun subThree (x) (sub x 3))" 
+      (defun subThree (x) (sub x 3))
+      1" 
       |> parse 
-      |> should equal [Defun ("addFive", ["x", typeof<int>], Call ("add", [Identifier "x"; Number 5]));
-                       Defun ("subThree", ["x", typeof<int>], Call ("sub", [Identifier "x"; Number 3]))]
+      |> should equal (Defun ("addFive", ["x", typeof<int>], Call ("add", [Identifier "x"; Number 5]),
+                         Defun ("subThree", ["x", typeof<int>], Call ("sub", [Identifier "x"; Number 3]),
+                           Number 1)))
