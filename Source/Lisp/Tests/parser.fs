@@ -56,3 +56,20 @@ let ``should be able to place several expressions after each other`` () =
 [<Fact>]
 let ``should delimit expressions by new line`` () =
     "(add 1 2)\n4" |> parse |> should equal [Call ("add", [Number 1; Number 2]); Number 4]
+
+[<Fact>]
+let ``should be able to place two function calls after each other`` () =
+    @"(add 1 2)
+      (add 3 4)" |> parse |> should equal [Call ("add", [Number 1; Number 2]); Call ("add", [Number 3; Number 4])]
+
+[<Fact>]
+let ``should place function definitions after each other`` () =
+    @"(defun one () 1) (one)" |> parse |> should equal [Defun ("one", [], Number 1); Call ("one", [])]
+
+[<Fact>]
+let ``should place function definitions in each own rows`` () =
+    @"(defun addFive (x) (add x 5))
+      (defun subThree (x) (sub x 3))" 
+      |> parse 
+      |> should equal [Defun ("addFive", ["x", typeof<int>], Call ("add", [Identifier "x"; Number 5]));
+                       Defun ("subThree", ["x", typeof<int>], Call ("sub", [Identifier "x"; Number 3]))]

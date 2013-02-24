@@ -49,6 +49,23 @@ let ``should be able to call a defined function`` () =
     @"(defun myAdd (x y) (add x y))
       (myAdd 1 2)" |> invoke<int> |> should equal 3
 
+[<Fact>]
+let ``don't mix up the order of the arguments`` () =
+    @"(defun mySub (x y) (sub x y))
+      (mySub 5 3)" |> invoke<int> |> should equal 2
+
+[<Fact>]
+let ``nesting function definitions is no problem`` () =
+    @"(defun addFive (x) (add x 5))
+      (defun subThree (x) (sub x 3))
+      (subThree (addFive 10))" |> invoke<int> |> should equal 12
+
+[<Fact(Skip = "Not implemented in invoker")>]
+let ``recursion should be allowed`` () =
+    @"(defun mult (x y)
+         (if (lt y 1) 0 (mult x (sub y 1))))
+      (mult 4 5)" |> invoke<int> |> should equal 20
+
 // expressions
 [<Fact>]
 let ``should only invoke first expression on primitive types and function calls`` () =
