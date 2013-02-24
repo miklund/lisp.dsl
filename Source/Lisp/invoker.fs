@@ -11,7 +11,8 @@ let framework =
         "add", typeof<int -> int -> int>, <@@ (fun a b -> a + b) @@>;
         "sub", typeof<int -> int -> int>, <@@ (fun a b -> a - b) @@>;
         "eq", typeof<int -> int -> bool>, <@@ (fun (a : int) b -> a = b) @@>;
-        "if", typeof<bool -> int -> int -> int>, <@@ (fun cond (yes : int) no -> if cond then yes else no) @@>
+        "if", typeof<bool -> int -> int -> int>, <@@ (fun cond (yes : int) no -> if cond then yes else no) @@>;
+        "lt", typeof<int -> int -> bool>, <@@ (fun (a : int) b -> a < b ) @@>
     ]
 
 // Create an application
@@ -29,7 +30,8 @@ let rec toExprUntyped vars = function
     // resolve arguments
     let argumentExpressions = arguments |> List.map (fun arg -> (toExprUntyped vars [arg]))
     // create application
-    application (vars |> Map.find(name)) argumentExpressions
+    argumentExpressions |> List.fold(fun prev next -> Quotations.Expr.Application(prev, next)) (vars |> Map.find(name))
+
 // debug values
 // let name = "myAdd"
 // let parameters = [("x", typeof<int>); ("y", typeof<int>)]
@@ -51,6 +53,8 @@ let rec toExprUntyped vars = function
     let letExpr next = Quotations.Expr.Let(funcVar, lambdaExpr, next)
     // return evaluation of next, with this function in scope
     letExpr (toExprUntyped (vars.Add(name, Quotations.Expr.Var(funcVar))) tl)
+
+| hd :: tl -> failwith (sprintf "Unknown program construct %A" hd)
 
 // typed version of toExprUntyped
 let toExpr<'a> (vars : Map<string, Quotations.Expr>) ast : Quotations.Expr<'a> =
