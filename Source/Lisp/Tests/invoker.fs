@@ -65,8 +65,3 @@ let ``recursion should be allowed`` () =
     @"(defun mult (x y)
          (if (lt y 1) 0 (mult x (sub y 1))))
       (mult 4 5)" |> invoke<int> |> should equal 20
-
-// expressions
-[<Fact>]
-let ``should only invoke first expression on primitive types and function calls`` () =
-    "1\n2" |> invoke<int> |> should equal 1

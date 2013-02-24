@@ -61,13 +61,3 @@ let ``(defun addTwo (x) (add x 2)) is parsed as function definition`` () =
 [<Fact>]
 let ``(defun myAdd (x y) (add x y)) is parsed as function definition`` () =
     "(defun myAdd (x y) (add x y))" |> lex |> toString |> should equal "LPAREN DEFUN IDENTIFIER LPAREN IDENTIFIER IDENTIFIER RPAREN LPAREN IDENTIFIER IDENTIFIER IDENTIFIER RPAREN RPAREN END"
-
-// expressions
-[<Fact>]
-let ``can put several expression on the same line`` () =
-    "(add 1 2) 4" |> lex |> toString |> should equal "LPAREN IDENTIFIER NUMBER NUMBER RPAREN NUMBER END"
-
-[<Fact>]
-let ``newline is not intepreted`` () =
-    "(add 1 2)\n4" |> lex |> toString |> should equal "LPAREN IDENTIFIER NUMBER NUMBER RPAREN NUMBER END"
-

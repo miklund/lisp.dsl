@@ -8,7 +8,7 @@ module Statements =
     | Boolean of bool
     | Call of string * Ast list
     | Identifier of string
-    | Defun of string * Variable list * Ast
+    | Defun of string * Variable list * Ast * Ast
 
     let rec intVariables = function
     | [] -> []
