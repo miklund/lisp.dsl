@@ -43,3 +43,13 @@ let ``should invoke (eq 1 2)`` () =
 let ``should invoke (if (eq 1 2) (add 1 2) (sub 1 2)) as -1`` () =
     "(if (eq 1 2) (add 1 2) (sub 1 2))" |> invoke<int> |> should equal -1
 
+// defun
+[<Fact>]
+let ``should be able to call a defined function`` () =
+    @"(defun myAdd (x y) (add x y))
+      (myAdd 1 2)" |> invoke<int> |> should equal 3
+
+// expressions
+[<Fact>]
+let ``should only invoke first expression on primitive types and function calls`` () =
+    "1\n2" |> invoke<int> |> should equal 1
