@@ -15,11 +15,6 @@ let framework =
         "lt", typeof<int -> int -> bool>, <@@ (fun (a : int) b -> a < b ) @@>
     ]
 
-// Create an application
-// Example: Application (Application (add, Value (1)), Value (2))
-let application var args =
-    args |> List.fold(fun prev next -> Quotations.Expr.Application(prev, next)) var
-
 // convert ast to Quotations.Expr
 let rec toExprUntyped vars = function
 | Number(x) -> Quotations.Expr.Value(x)
