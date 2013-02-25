@@ -24,7 +24,7 @@ expression:
 	| NUMBER { Number($1) }
 	| BOOLEAN { Boolean($1) }
 	| IDENTIFIER { Identifier($1) }
-	| LPAREN DEFUN IDENTIFIER LPAREN arguments expression RPAREN { Defun($3, intVariables($5), $6) }
+	| LPAREN DEFUN IDENTIFIER LPAREN arguments expression RPAREN { Defun($3, $5, $6) }
 	| LPAREN IDENTIFIER parameters { Call($2, $3) }
 
 parameters:

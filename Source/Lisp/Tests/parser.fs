@@ -42,8 +42,8 @@ let ``(defun one () 1) is parsed as a function definition`` () =
 
 [<Fact>]
 let ``(defun addTwo (x) (add x 2)) is parsed as a function definition`` () =
-    "(defun addTwo (x) (add x 2))" |> parse |> should equal (Defun ("addTwo", [("x", typeof<int>)], (Call ("add", [Identifier "x"; Number 2]))))
+    "(defun addTwo (x) (add x 2))" |> parse |> should equal (Defun ("addTwo", [Identifier "x"], (Call ("add", [Identifier "x"; Number 2]))))
 
 [<Fact>]
 let ``(defun myAdd (x y) (add x y)) is parsed as a function definition`` () =
-    "(defun myAdd (x y) (add x y))" |> parse |> should equal (Defun ("myAdd", [("x", typeof<int>); ("y", typeof<int>)], (Call ("add", [Identifier "x"; Identifier "y"]))))
+    "(defun myAdd (x y) (add x y))" |> parse |> should equal (Defun ("myAdd", [Identifier "x"; Identifier "y"], (Call ("add", [Identifier "x"; Identifier "y"]))))

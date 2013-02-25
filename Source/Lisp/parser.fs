@@ -177,7 +177,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 27 ".\Source\Lisp\parser.fsy"
-                                                                                     Defun(_3, intVariables(_5), _6) 
+                                                                                     Defun(_3, _5, _6) 
                    )
 # 27 ".\Source\Lisp\parser.fsy"
                  : 'expression));
