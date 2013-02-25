@@ -60,8 +60,12 @@ let ``nesting function definitions is no problem`` () =
       (defun subThree (x) (sub x 3))
       (subThree (addFive 10))" |> invoke<int> |> should equal 12
 
-[<Fact(Skip = "Not implemented in invoker")>]
+[<Fact(Skip="Trying to get recursion to work")>]
 let ``recursion should be allowed`` () =
     @"(defun mult (x y)
-         (if (lt y 1) 0 (mult x (sub y 1))))
+         (defun multi (z w)
+            (if (lt w 1) 0 (add z (mult z (sub y 1))))
+         )
+         (multi x y)
+      )
       (mult 4 5)" |> invoke<int> |> should equal 20

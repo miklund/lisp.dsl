@@ -1,3 +1,6 @@
+# Blog post describing this code
+http://litemedia.info/write-your-own-language
+
 # Branches in Git
 Step0 - Basic project structure
 Step1 - Primitives (number, boolean)
