@@ -26,17 +26,13 @@ let rec toExprUntyped vars = function
     // create application
     argumentExpressions |> List.fold(fun prev next -> Quotations.Expr.Application(prev, next)) (vars |> Map.find(name))
 
-// debug values
-// let name = "myAdd"
-// let parameters = [("x", typeof<int>); ("y", typeof<int>)]
-// let bodyAst = Call ("add", [(Identifier "x"); (Identifier "y")])
 | Defun(name, parameters, bodyAst, inscopeAst) ->
-    // create function local variables
-    let localVars = parameters |> List.map (fun (paramName, paramType) -> Quotations.Var(paramName, paramType))
+    // create function local variables (NOTE: locked into parameters as ints)
+    let localVars = parameters |> List.map (fun param -> Quotations.Var(param, typeof<int>))
     // create function local variables expressions
     let localVarsExpr = localVars |> List.map (Quotations.Expr.Var)
     // create local scope
-    let localScope = List.zip parameters localVarsExpr |> List.fold (fun scope ((paramName, _), varExpr) -> scope |> Map.add paramName varExpr) vars
+    let localScope = List.zip parameters localVarsExpr |> List.fold (fun scope (paramName, varExpr) -> scope |> Map.add paramName varExpr) vars
     // evaluate body
     let bodyExpr = toExprUntyped localScope bodyAst
     // create body lambda
